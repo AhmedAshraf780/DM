@@ -7,7 +7,8 @@ int main() {
   removeDuplicates(transactions);
 
   std::map<std::string, int> itemCounts = countItems(transactions);
-  std::map<std::string, int> filteredItems = filterItems(itemCounts, 3);
+  std::map<std::string, int> filteredItems =
+      filterItems(itemCounts, MIN_SUPPORT);
   sortedItems = sortItems(filteredItems);
 
   removeUnsupportedItems(transactions, itemCounts, 3);
@@ -20,9 +21,11 @@ int main() {
   FPTree fpTree;
   fpTree.insertTransactions(newTransactions);
 
-  // vector<pair<string, int>> freqBottomUp = removeDominant(sortedItems);
-
-  solve(fpTree, 3, bottomUpFrequents(sortedItems));
+  /*
+   *  solving the problem with minimum support = 3
+   *
+   * */
+  solve(fpTree, MIN_SUPPORT, bottomUpFrequents(sortedItems));
 
   cout << "The frequent paths:\n";
   for (auto item : inventory) {
@@ -33,5 +36,12 @@ int main() {
   }
   cout << "====================================\n";
   testLists();
+  GenerateRules();
+
+  /*
+   *   END OF THE PROBLEM
+   *
+   * */
+
   return 0;
 }

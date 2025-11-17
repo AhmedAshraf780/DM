@@ -88,21 +88,17 @@ public:
   }
 
   void makeCT(const vector<pair<vector<string>, int>> &paths) {
-    // Build a conditional tree from filtered & combined paths.
-    // Each path has an associated 'count' which we add to node counts/header freq.
     for (const auto &pc : paths) {
       const vector<string> &path = pc.first;
       int cnt = pc.second;
       Node *curr = root;
       for (const auto &item : path) {
 
-        // child exists?
         auto itChild = curr->nexts.find(item);
         if (itChild == curr->nexts.end() || itChild->second == nullptr) {
-          // create new node with count = cnt
           Node *newNode = new Node(item);
           newNode->count = cnt;
-          newNode->parent = curr;                 // IMPORTANT: set parent
+          newNode->parent = curr;
           curr->nexts[item] = newNode;
 
           // add to header list
@@ -115,15 +111,12 @@ public:
             p->nextOne = newNode;
           }
         } else {
-          // existing child: accumulate count
           Node *child = itChild->second;
-          child->count += cnt;   // IMPORTANT: add the path count
+          child->count += cnt;
         }
 
-        // header frequency should be increased by cnt (not by 1)
         headerTable[item].frequency += cnt;
 
-        // advance to the child
         curr = curr->nexts[item];
       }
     }
@@ -134,22 +127,22 @@ public:
     return headerTable;
   }
 
-  // Return the first child node under 'node' (or under root if node==nullptr).
+  // Return the first child node under 'root'
   Node *getBaseNode(Node *node = nullptr) {
     if (node == nullptr) node = root;
     for (auto &kv : node->nexts) {
-      return kv.second; // first child found
+      return kv.second;
     }
     return nullptr;
   }
 
-  // Count number of nodes in subtree rooted at 'node' (excluding the root if you like).
+  // Count number of nodes in subtree except the "root"
   int size(Node *node = nullptr) {
     if (node == nullptr) node = root;
     int count = 0;
     for (auto &[item, child] : node->nexts) {
-      count += 1;           // count the child itself
-      count += size(child); // plus all descendants
+      count += 1;
+      count += size(child);
     }
     return count;
   }
@@ -165,7 +158,6 @@ public:
         cout << "  ";
       cout << child->item << " (" << child->count << ")" << endl;
 
-      // Recursive call for children
       printTree(child, level + 1);
     }
   }

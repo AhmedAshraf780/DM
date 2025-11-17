@@ -32,7 +32,6 @@ std::vector<std::vector<std::string>> readCSV(const std::string &filename) {
     return transactions;
   }
 
-  // Skip the header
   std::getline(file, line);
 
   while (std::getline(file, line)) {
@@ -42,13 +41,11 @@ std::vector<std::vector<std::string>> readCSV(const std::string &filename) {
     std::getline(ss, tid, ',');
     std::getline(ss, items);
 
-    // remove whitespace and carriage returns
     items.erase(
         std::remove_if(items.begin(), items.end(),
                        [](unsigned char c) { return c == '\r' || c == '\n'; }),
         items.end());
 
-    // remove quotes if they exist
     if (!items.empty() && items.front() == '"')
       items.erase(items.begin());
     if (!items.empty() && items.back() == '"')
@@ -62,7 +59,7 @@ std::vector<std::vector<std::string>> readCSV(const std::string &filename) {
   return transactions;
 }
 
-// Function to print the transactions
+// print all transaction just for debugging
 void printTransactions(
     const std::vector<std::vector<std::string>> &transactions) {
   for (const auto &transaction : transactions) {
@@ -102,8 +99,8 @@ sortItems(const std::map<std::string, int> &itemsMap) {
 
   std::sort(items.begin(), items.end(), [](const auto &a, const auto &b) {
     if (a.second == b.second)
-      return a.first < b.first; // sort by ASCII (key) if values equal
-    return a.second > b.second; // sort by value (descending)
+      return a.first < b.first;
+    return a.second > b.second;
   });
 
   return items;
@@ -113,7 +110,6 @@ void removeUnsupportedItems(std::vector<std::vector<std::string>> &transactions,
                             std::map<std::string, int> &itemCounts,
                             int minSupport) {
   for (auto &transaction : transactions) {
-    // Use erase-remove idiom directly on the transaction
     transaction.erase(std::remove_if(transaction.begin(), transaction.end(),
                                      [&](const std::string &item) {
                                        return itemCounts[item] < minSupport;
@@ -128,7 +124,6 @@ std::vector<std::string> reconstructTransaction(
 
   std::vector<std::string> sortedTransaction;
 
-  // Create a lookup map for quick access to order index
   std::map<std::string, int> orderIndex;
   for (size_t i = 0; i < sortedMap.size(); ++i) {
     orderIndex[sortedMap[i].first] = static_cast<int>(i);
@@ -143,7 +138,7 @@ std::vector<std::string> reconstructTransaction(
 
   return sortedTransaction;
 }
-// Remove duplicate items from each transaction (keep first occurrence)
+// Remove duplicate items from each transaction
 void removeDuplicates(std::vector<std::vector<std::string>> &transactions) {
   for (auto &transaction : transactions) {
     std::vector<std::string> unique;

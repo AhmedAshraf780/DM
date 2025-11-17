@@ -33,15 +33,14 @@ vector<pair<vector<string>, int>> getPrefixPaths(const string &item,
 void combinePaths(vector<pair<vector<string>, int>> &paths) {
   unordered_map<string, int> combined;
 
-  // Serialize each path as a single string key
   for (auto &pc : paths) {
     string key;
     for (auto &it : pc.first)
-      key += it + ","; // comma-delimited key
+      key += it + ",";
     combined[key] += pc.second;
   }
 
-  // Rebuild the merged paths
+  // combine paths again
   paths.clear();
   for (auto &[key, cnt] : combined) {
     vector<string> path;
@@ -96,8 +95,7 @@ void minning(FPTree &CT, vector<string> suffix) {
     return a.second > b.second;
   });
   for (auto &[item, cnt] : freqItems) {
-
-    vector<string> pattern = suffix;
+    vector<string> pattern = suffix; // pattern {Y}
     pattern.insert(pattern.begin(), item);
     inventory.push_back({pattern, cnt});
     vector<pair<vector<string>, int>> paths =
@@ -118,7 +116,7 @@ void minning(FPTree &CT, vector<string> suffix) {
  * */
 
 void solve(FPTree &fpTree, int min_support, vector<string> freqBottomUp) {
-  // 1. Loop on the freqBotomUp array # [D,E,B,C]
+  // 1. Loop on the freqBotomUp array # [Y,O,M,E]
   for (int i = 0; i < freqBottomUp.size() - 1; i++) {
     // 2. generate the Conditional Pattern Base
     // 3. Filter the conditional pattern base
@@ -129,6 +127,6 @@ void solve(FPTree &fpTree, int min_support, vector<string> freqBottomUp) {
         getPrefixPaths(freqBottomUp[i], headerTable[freqBottomUp[i]]);
     filteringPaths(paths, min_support);
     FPTree CT = generateConditionalPatternBase(paths);
-    minning(CT, {freqBottomUp[i]});
+    minning(CT, {freqBottomUp[i]}); // Y i need paths ended with Y
   }
 }
